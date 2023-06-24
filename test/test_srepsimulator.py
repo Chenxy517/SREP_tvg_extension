@@ -83,3 +83,5 @@ def test_5_node_D():
                              end_timer=2,
                              end_gen=0,
                              sync_invocations=1 * len(G.edges)))
+    
+test_triangle()

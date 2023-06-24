@@ -345,7 +345,7 @@ def srep_vs_mempool(
 
 
 def sim_experiments(
-        net_sizes: List[int] = [1000],
+        net_sizes: List[int] = [100],
         avg_degs: List[int] = [8, 6, 4, 2],
         reps: int = 10,
         S: scipy.stats.rv_continuous = scipy.stats.maxwell(**{'loc': 15401.20304028427,
@@ -427,3 +427,5 @@ def analytical_large_net(
 def overnight():
     sim_experiments()
     # analytical_large_net()
+
+overnight()

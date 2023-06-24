@@ -16,6 +16,7 @@ from functools import reduce
 from operator import mul
 
 import scipy
+from scipy import stats
 
 import networkx as nx
 import numpy as np
@@ -313,7 +314,7 @@ def mut_diff_from_asgn(network: nx.Graph,
     return d_m
 
 
-def assign_diffs_from_set_sizes(dist: scipy.stats.rv_continuous,
+def assign_diffs_from_set_sizes(dist: stats.rv_continuous,
                                 network: nx.Graph,
                                 uni_size: Optional[int] = None,
                                 psi: Optional[float] = 2,
