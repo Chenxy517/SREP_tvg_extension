@@ -23,7 +23,7 @@ from typing import List, Tuple, Dict, Set, Any
 from tqdm import tqdm
 
 from srep_simulator.srep import SREPSimulator, me_srep_analytic
-from srep_simulator.aux import gen_all_n_vertex_graphs, \
+from srep_simulator.util import gen_all_n_vertex_graphs, \
     count_all_n_vertex_graphs, assign_diffs_from_set_sizes, mut_diff_from_asgn
 
 

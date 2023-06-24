@@ -26,9 +26,9 @@ import tqdm
 import numpy as np
 import networkx as nx
 
-import srep_simulator.aux as aux
+import srep_simulator.util as aux
 
-from srep_simulator.aux import Assign_T
+from srep_simulator.util import Assign_T
 
 MIN_GENERATION_CONST = 0
 
