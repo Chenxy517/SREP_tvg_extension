@@ -375,16 +375,16 @@ class SREPSimulator():
 
     # tvg_applied: True when apply time-varying-graph
     # Only set when tvg_applied = True, time stamps when edge connection state changes
-    tvg_applied: bool = False
+    tvg_applied: Optional[bool] = False
     time_stamp: Optional[np.ndarray] = None
 
     def __post_init__(self):
         """Complete initialization of simulator object."""
         # generate network topology
         if self.network is None:
-            self.network = \
-                nx.generators.random_graphs.connected_watts_strogatz_graph(
-                    *self.ws_nkp)
+            if tvg_applied is False:
+
+            self.network = nx.generators.random_graphs.connected_watts_strogatz_graph(*self.ws_nkp)
         else:
             self.network = self.network.copy()
 
