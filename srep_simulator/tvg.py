@@ -40,5 +40,11 @@ def check_connection(array, time):
     else:
         return True
 
-
+def update_graph(graph, time_stamp, current_time) -> nx.Graph:
+    if check_connection(time_stamp, current_time) is True:
+        if graph.has_edge(1, 2):
+            graph.remove_edge(1, 2)
+        else:
+            graph.add_edge(1, 2)
+    return graph
     

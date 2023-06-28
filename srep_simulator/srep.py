@@ -27,6 +27,7 @@ import numpy as np
 import networkx as nx
 
 import srep_simulator.util as aux
+import srep_simulator.tvg as tvg
 
 from srep_simulator.util import Assign_T
 
@@ -232,6 +233,118 @@ class NodeSyncEvent(Event):
             simulator=self.simulator)
         return [next_loop]
 
+@dataclass
+class NodeSyncEvent_tvg(Event):
+    """
+    Synchronization loop at the node.
+
+    Attributes:
+    --------
+    node: int
+        The node to sync itself with its neighbors.
+    generation: int
+        How many times this node synchronized before.
+    set_duration: bool
+        Whether to calculate differences according to current state.
+    time_stamp: np.ndarray
+        Time stamps when connection status od edges change
+    """
+
+    node: int = 0
+    generation: int = 0
+    set_duration: bool = False
+    time_stamp: np.ndarray = None
+
+    def __post_init__(self):
+        """Calculate the duration if needed."""
+        if self.set_duration:
+            self.duration = self.simulator.calc_duration(self.node)
+
+        super().__post_init__()
+
+    def adjust_duration(self):
+        """
+        Set the duration of this event according to the current state.
+
+        This is used for the objects that did not set their duration
+        at the construction time.
+        """
+        assert not self.set_duration, \
+            f"Duration of {self} has been set at construction time."
+
+        self.duration = self.simulator.calc_duration(self.node)
+        self.completion_time += self.duration
+
+    def apply(self) -> List[Event]:
+        """Simulate one node synchronization loop."""
+        G = self.simulator.network  # type: nx.Graph
+
+        # sync with all neighbors using replicas
+        for n in G.neighbors(self.node):
+            this_node = G.nodes[self.node]['data']  # type: NetworkNode
+            neighbor = G.nodes[n]['data']           # type: NetworkNode
+
+            # sync only the neighbors that did not sync with me in
+            # this same generation
+            if n in this_node.synced_with_me \
+               and this_node.synced_with_me[n] == self.generation:
+                continue
+
+            # calculate what this sync will cost in communication if
+            # it was done in the MempoolSync-style
+            if self.simulator.mempoolsync_params is not None:
+                self.simulator._stats.mempoolsync_cc += \
+                    self.simulator.calc_mempoolsync_cc(self.node)
+
+            # update the overall communication cost of the simulation
+            this_minus_neighbor = this_node.replicas[n].difference(
+                neighbor.replicas[self.node])
+            neighbor_minus_this = neighbor.replicas[self.node].difference(
+                this_node.replicas[n])
+            diffs = len(this_minus_neighbor) + len(neighbor_minus_this)
+            self.simulator._stats.communication_cost += diffs
+
+            # actually synchronize replicas
+            new = this_node.replicas[n].union(neighbor.replicas[self.node])
+            this_node.replicas[n] = new
+            neighbor.replicas[self.node] = new.copy()
+
+            # note that we have synced with this neighbor
+            neighbor.synced_with_me[self.node] = self.generation
+
+            # increment global sync invocation counter
+            self.simulator._stats.sync_invocations += 1
+
+        # count the redundant transfers
+        d_set = G.nodes[self.node]['data'].data_set
+        replicas = G.nodes[self.node]['data'].replicas
+        news: List[int] = []
+        for _, r in replicas.items():
+            news += list(r.difference(d_set))
+
+        self.simulator._stats.redundant_trans += len(news) - len(set(news))
+
+        # unionize all replicas into the data set
+        G.nodes[self.node]['data'].data_set = \
+            G.nodes[self.node]['data'].data_set.union(
+                *G.nodes[self.node]['data'].replicas.values())
+
+        # recreate the replicas
+        for i in G.nodes[self.node]['data'].replicas.keys():
+            G.nodes[self.node]['data'].replicas[i] = \
+                G.nodes[self.node]['data'].data_set.copy()
+            
+        # update the network according to time_stamp
+        G = tvg.update_graph(G, self.time_stamp, self.completion_time)
+
+        # create the next loop's event
+        next_loop = NodeSyncEvent_tvg(
+            node=self.node,
+            current_time=self.completion_time,
+            generation=self.generation + 1,
+            simulator=self.simulator,
+            time_stamp=self.time_stamp)
+        return [next_loop]
 
 class EventQ(PriorityQueue):
     """Infinite priority queue."""
@@ -382,9 +495,10 @@ class SREPSimulator():
         """Complete initialization of simulator object."""
         # generate network topology
         if self.network is None:
-            if tvg_applied is False:
-
-            self.network = nx.generators.random_graphs.connected_watts_strogatz_graph(*self.ws_nkp)
+            if self.tvg_applied is False:
+                self.network = nx.generators.random_graphs.connected_watts_strogatz_graph(*self.ws_nkp)
+            else:
+                self.network, self.time_stamp = tvg.generate_tvg(*self.ws_nkp)
         else:
             self.network = self.network.copy()
 
@@ -440,12 +554,13 @@ class SREPSimulator():
                 self.network.nodes[n]['data'] = node_data
 
         # create the initial events
-        initial_events = [NodeSyncEvent(node=n,
-                                        current_time=0,
-                                        generation=MIN_GENERATION_CONST,
-                                        simulator=self,
-                                        set_duration=True)
-                          for n in self.network.nodes]
+        if self.tvg_applied is False:
+            initial_events = [NodeSyncEvent(node=n,
+                                            current_time=0,
+                                            generation=MIN_GENERATION_CONST,
+                                            simulator=self,
+                                            set_duration=True)
+                            for n in self.network.nodes]
         self.eventq.enqueue(initial_events)
 
     def __is_fully_synchronized(self) -> bool:
