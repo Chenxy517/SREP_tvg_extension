@@ -345,8 +345,8 @@ def srep_vs_mempool(
 
 
 def sim_experiments(
-        net_sizes: List[int] = [100],
-        avg_degs: List[int] = [8, 6, 4, 2],
+        net_sizes: List[int] = [10],
+        avg_degs: List[int] = [4],
         reps: int = 10,
         S: scipy.stats.rv_continuous = scipy.stats.maxwell(**{'loc': 15401.20304028427,
                                                               'scale': 15920.396446893377}),
@@ -358,7 +358,8 @@ def sim_experiments(
             for rep in range(reps):
                 sim = SREPSimulator(ws_nkp=(ns, deg, 0.24),
                                     me_srep_dist_psi=(S, psi),
-                                    trace_file='/dev/null')
+                                    trace_file='/dev/null',
+                                    tvg_applied=True)
                 sim.run(timeout=0)
                 stats = sim.get_stats()
 

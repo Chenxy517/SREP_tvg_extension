@@ -498,7 +498,7 @@ class SREPSimulator():
             if self.tvg_applied is False:
                 self.network = nx.generators.random_graphs.connected_watts_strogatz_graph(*self.ws_nkp)
             else:
-                self.network, self.time_stamp = tvg.generate_tvg(*self.ws_nkp)
+                self.network, self.time_stamp = tvg.generate_tvg(self.ws_nkp)
         else:
             self.network = self.network.copy()
 
@@ -560,6 +560,14 @@ class SREPSimulator():
                                             generation=MIN_GENERATION_CONST,
                                             simulator=self,
                                             set_duration=True)
+                            for n in self.network.nodes]
+        else:
+            initial_events = [NodeSyncEvent_tvg(node=n,
+                                            current_time=0,
+                                            generation=MIN_GENERATION_CONST,
+                                            simulator=self,
+                                            set_duration=True,
+                                            time_stamp=self.time_stamp)
                             for n in self.network.nodes]
         self.eventq.enqueue(initial_events)
 

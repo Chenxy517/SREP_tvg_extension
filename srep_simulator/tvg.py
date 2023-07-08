@@ -6,7 +6,7 @@ import numpy as np
 def generate_tvg(ws_nkp: Tuple[float, float, float]) -> Tuple[nx.Graph, np.ndarray]:
 
     # generate the original graph with given parameter
-    base_graph = nx.generators.random_graphs.connected_watts_strogatz_graph(ws_nkp)
+    base_graph = nx.generators.random_graphs.connected_watts_strogatz_graph(*ws_nkp)
     # size of the network
     net_size = ws_nkp[0]
     # average degree of the network
@@ -44,7 +44,9 @@ def update_graph(graph, time_stamp, current_time) -> nx.Graph:
     if check_connection(time_stamp, current_time) is True:
         if graph.has_edge(1, 2):
             graph.remove_edge(1, 2)
+            print("Edge removed")
         else:
             graph.add_edge(1, 2)
+            print("Edge added")
     return graph
     
