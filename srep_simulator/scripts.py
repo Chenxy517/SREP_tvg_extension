@@ -343,47 +343,6 @@ def srep_vs_mempool(
     with open(f_n, "wb") as f:
         pickle.dump(res, f)
 
-
-def sim_experiments(
-        net_sizes: List[int] = [10],
-        avg_degs: List[int] = [4],
-        reps: int = 10,
-        S: scipy.stats.rv_continuous = scipy.stats.maxwell(**{'loc': 15401.20304028427,
-                                                              'scale': 15920.396446893377}),
-        psi: float = 0.355):
-    records: List[Dict[str, Any]] = []
-
-    for ns in net_sizes:
-        for deg in tqdm(avg_degs):
-            for rep in range(reps):
-                sim = SREPSimulator(ws_nkp=(ns, deg, 0.24),
-                                    me_srep_dist_psi=(S, psi),
-                                    trace_file='/dev/null',
-                                    tvg_applied=True)
-                sim.run(timeout=0)
-                stats = sim.get_stats()
-
-                M = mut_diff_from_asgn(sim.network, sim._s_vec)
-
-                record = {'stats': stats,
-                          'diam': nx.diameter(sim.network),
-                          'M_sum': M.sum(),
-                          'M_max': M.max(),
-                          'network_size': ns,
-                          'avg_deg': deg,
-                          'rep': rep}
-
-                records.append(record)
-
-                del sim
-                gc.collect()
-
-    sfx = uuid.uuid4().hex[:8]
-    f_n = f"sim_experiments_{sfx}.pickle"
-    with open(f_n, "wb") as f:
-        pickle.dump(records, f)
-
-
 def analytical_large_net(
         net_size: int = 10_000,
         degs: List[int] = [4, 8, 12, 16, 20, 24, 28],
@@ -424,6 +383,49 @@ def analytical_large_net(
     f_n = f"analytical_large_net_{sfx}.pickle"
     with open(f_n, "wb") as f:
         pickle.dump(records, f)
+
+def sim_experiments(
+        net_sizes: List[int] = [5],
+        avg_degs: List[int] = [1],
+        reps: int = 1,
+        S: scipy.stats.rv_continuous = scipy.stats.maxwell(**{'loc': 15401.20304028427,
+                                                              'scale': 15920.396446893377}),
+        psi: float = 0.355):
+    records: List[Dict[str, Any]] = []
+
+    for ns in net_sizes:
+        for deg in tqdm(avg_degs):
+            for rep in range(reps):
+                # sim = SREPSimulator(ws_nkp=(ns, deg, 0.24),
+                #                     me_srep_dist_psi=(S, psi),
+                #                     trace_file='/dev/null',
+                #                     tvg_applied=True)
+                sim = SREPSimulator(ws_nkp=(ns, deg, 0.24),
+                                    trace_file='/dev/null',
+                                    tvg_applied=True)
+                sim.run(timeout=0)
+                stats = sim.get_stats()
+
+                # M = mut_diff_from_asgn(sim.network, sim._s_vec)
+
+                record = {'stats': stats,
+                          'diam': nx.diameter(sim.network),
+                        #   'M_sum': M.sum(),
+                        #   'M_max': M.max(),
+                          'network_size': ns,
+                          'avg_deg': deg,
+                          'rep': rep}
+
+                records.append(record)
+
+                del sim
+                gc.collect()
+
+    sfx = uuid.uuid4().hex[:8]
+    f_n = f"sim_experiments_{sfx}.pickle"
+    with open(f_n, "wb") as f:
+        pickle.dump(records, f)
+
 
 def overnight():
     sim_experiments()

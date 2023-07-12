@@ -246,14 +246,14 @@ class NodeSyncEvent_tvg(Event):
         How many times this node synchronized before.
     set_duration: bool
         Whether to calculate differences according to current state.
-    time_stamp: np.ndarray
+    time_stamp: List[np.ndarray]
         Time stamps when connection status od edges change
     """
 
     node: int = 0
     generation: int = 0
     set_duration: bool = False
-    time_stamp: np.ndarray = None
+    time_stamp: List[np.ndarray] = None
 
     def __post_init__(self):
         """Calculate the duration if needed."""
@@ -297,12 +297,13 @@ class NodeSyncEvent_tvg(Event):
                     self.simulator.calc_mempoolsync_cc(self.node)
 
             # update the overall communication cost of the simulation
-            this_minus_neighbor = this_node.replicas[n].difference(
-                neighbor.replicas[self.node])
-            neighbor_minus_this = neighbor.replicas[self.node].difference(
-                this_node.replicas[n])
-            diffs = len(this_minus_neighbor) + len(neighbor_minus_this)
-            self.simulator._stats.communication_cost += diffs
+            if n in this_node.replicas and self.node in neighbor.replicas:
+                this_minus_neighbor = this_node.replicas[n].difference(
+                    neighbor.replicas[self.node])
+                neighbor_minus_this = neighbor.replicas[self.node].difference(
+                    this_node.replicas[n])
+                diffs = len(this_minus_neighbor) + len(neighbor_minus_this)
+                self.simulator._stats.communication_cost += diffs
 
             # actually synchronize replicas
             new = this_node.replicas[n].union(neighbor.replicas[self.node])
@@ -489,7 +490,7 @@ class SREPSimulator():
     # tvg_applied: True when apply time-varying-graph
     # Only set when tvg_applied = True, time stamps when edge connection state changes
     tvg_applied: Optional[bool] = False
-    time_stamp: Optional[np.ndarray] = None
+    time_stamp: Optional[List[np.ndarray]] = None
 
     def __post_init__(self):
         """Complete initialization of simulator object."""
@@ -499,6 +500,7 @@ class SREPSimulator():
                 self.network = nx.generators.random_graphs.connected_watts_strogatz_graph(*self.ws_nkp)
             else:
                 self.network, self.time_stamp = tvg.generate_tvg(self.ws_nkp)
+                print("Time Stamp:", self.time_stamp)
         else:
             self.network = self.network.copy()
 
@@ -577,9 +579,11 @@ class SREPSimulator():
 
         for n in self.network.nodes:
             this: Set[int] = self.network.nodes[n]['data'].data_set
-            if fst is None:
-                fst = this
-            elif fst != this:
+            # if fst is None:
+            #     fst = this
+            # elif fst != this:
+            #     return False
+            if len(this) != len(self.network.nodes):
                 return False
 
         return True

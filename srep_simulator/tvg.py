@@ -6,15 +6,20 @@ import numpy as np
 def generate_tvg(ws_nkp: Tuple[float, float, float]) -> Tuple[nx.Graph, np.ndarray]:
 
     # generate the original graph with given parameter
-    base_graph = nx.generators.random_graphs.connected_watts_strogatz_graph(*ws_nkp)
+    # base_graph = nx.generators.random_graphs.connected_watts_strogatz_graph(*ws_nkp)
+
     # size of the network
+    graph = nx.Graph()
     net_size = ws_nkp[0]
+    nodes = range(net_size)
+    graph.add_nodes_from(nodes)
+    graph.add_edge(0, 1)
     # average degree of the network
     deg = ws_nkp[1]
-    # average changing times of edges
-    avg_freq = 5
-    array = np.random.exponential(scale=1, size=avg_freq)
-    return base_graph, array
+    stamp_arr = []
+    for i in range (net_size - 1):
+        stamp_arr.append(np.random.exponential(scale=1, size=5))
+    return graph, stamp_arr
 
 
 def check_connection(array, time):
@@ -41,12 +46,14 @@ def check_connection(array, time):
         return True
 
 def update_graph(graph, time_stamp, current_time) -> nx.Graph:
-    if check_connection(time_stamp, current_time) is True:
-        if graph.has_edge(1, 2):
-            graph.remove_edge(1, 2)
-            print("Edge removed")
+    n = len(graph.nodes)
+    for i in  range(n - 1):
+        if check_connection(time_stamp[i], current_time) is True:
+            graph.add_edge(i, i + 1)
+            print("Edge added: ", current_time)
         else:
-            graph.add_edge(1, 2)
-            print("Edge added")
+            if graph.has_edge(i, i + 1):
+                graph.remove_edge(i, i + 1)
+                print("Edge removed: ", current_time)
     return graph
     
