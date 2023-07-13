@@ -283,6 +283,8 @@ class NodeSyncEvent_tvg(Event):
         for n in G.neighbors(self.node):
             this_node = G.nodes[self.node]['data']  # type: NetworkNode
             neighbor = G.nodes[n]['data']           # type: NetworkNode
+            print("self:", this_node)
+            print("neighbor", neighbor)
 
             # sync only the neighbors that did not sync with me in
             # this same generation
@@ -304,17 +306,30 @@ class NodeSyncEvent_tvg(Event):
                     this_node.replicas[n])
                 diffs = len(this_minus_neighbor) + len(neighbor_minus_this)
                 self.simulator._stats.communication_cost += diffs
+            # elif n in this_node.replicas:
+            #     diffs = len(this_node.replicas[n])
+            #     self.simulator._stats.communication_cost += diffs
+            # elif self.node in neighbor.replicas:
+            #     diffs = len(neighbor.replicas[self.node])
+            #     self.simulator._stats.communication_cost += diffs
 
             # actually synchronize replicas
-            new = this_node.replicas[n].union(neighbor.replicas[self.node])
-            this_node.replicas[n] = new
-            neighbor.replicas[self.node] = new.copy()
+            if n in this_node.replicas and self.node in neighbor.replicas:
+                print("in the loop")
+                new = this_node.replicas[n].union(neighbor.replicas[self.node])
+                this_node.replicas[n] = new
+                neighbor.replicas[self.node] = new.copy()
+            # elif n in this_node.replicas:
+            #     neighbor.replicas[self.node] = this_node.replicas[n].copy()
+            # elif self.node in neighbor.replicas:
+            #     this_node.replicas[n] = neighbor.replicas[self.node].copy()
 
             # note that we have synced with this neighbor
             neighbor.synced_with_me[self.node] = self.generation
 
             # increment global sync invocation counter
             self.simulator._stats.sync_invocations += 1
+            print("Sync cnt:", self.simulator._stats.sync_invocations)
 
         # count the redundant transfers
         d_set = G.nodes[self.node]['data'].data_set
@@ -336,7 +351,8 @@ class NodeSyncEvent_tvg(Event):
                 G.nodes[self.node]['data'].data_set.copy()
             
         # update the network according to time_stamp
-        G = tvg.update_graph(G, self.time_stamp, self.completion_time)
+        self.simulator.network = tvg.update_graph(G, self.time_stamp, self.completion_time)
+        print("Event done:", self.simulator.network, G.nodes[self.node]['data'])
 
         # create the next loop's event
         next_loop = NodeSyncEvent_tvg(
@@ -554,6 +570,7 @@ class SREPSimulator():
                     replicas={nbr: set([n])
                               for nbr in self.network[n]})
                 self.network.nodes[n]['data'] = node_data
+                print(node_data)
 
         # create the initial events
         if self.tvg_applied is False:

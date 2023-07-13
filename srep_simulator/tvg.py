@@ -18,7 +18,7 @@ def generate_tvg(ws_nkp: Tuple[float, float, float]) -> Tuple[nx.Graph, np.ndarr
     deg = ws_nkp[1]
     stamp_arr = []
     for i in range (net_size - 1):
-        stamp_arr.append(np.random.exponential(scale=1, size=5))
+        stamp_arr.append(np.random.exponential(scale=1, size=3))
     return graph, stamp_arr
 
 
@@ -50,10 +50,12 @@ def update_graph(graph, time_stamp, current_time) -> nx.Graph:
     for i in  range(n - 1):
         if check_connection(time_stamp[i], current_time) is True:
             graph.add_edge(i, i + 1)
-            print("Edge added: ", current_time)
+            print("Edge added: ", i, i + 1, "time:", current_time)
+            print(graph.edges())
         else:
             if graph.has_edge(i, i + 1):
                 graph.remove_edge(i, i + 1)
                 print("Edge removed: ", current_time)
+                print(graph.edges())
     return graph
     
