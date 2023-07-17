@@ -278,6 +278,8 @@ class NodeSyncEvent_tvg(Event):
     def apply(self) -> List[Event]:
         """Simulate one node synchronization loop."""
         G = self.simulator.network  # type: nx.Graph
+        print("Self node:", self.node)
+        print("Neighbors:", list(G.neighbors(self.node)))
 
         # sync with all neighbors using replicas
         for n in G.neighbors(self.node):
@@ -315,14 +317,9 @@ class NodeSyncEvent_tvg(Event):
 
             # actually synchronize replicas
             if n in this_node.replicas and self.node in neighbor.replicas:
-                print("in the loop")
                 new = this_node.replicas[n].union(neighbor.replicas[self.node])
                 this_node.replicas[n] = new
                 neighbor.replicas[self.node] = new.copy()
-            # elif n in this_node.replicas:
-            #     neighbor.replicas[self.node] = this_node.replicas[n].copy()
-            # elif self.node in neighbor.replicas:
-            #     this_node.replicas[n] = neighbor.replicas[self.node].copy()
 
             # note that we have synced with this neighbor
             neighbor.synced_with_me[self.node] = self.generation
@@ -352,7 +349,10 @@ class NodeSyncEvent_tvg(Event):
             
         # update the network according to time_stamp
         self.simulator.network = tvg.update_graph(G, self.time_stamp, self.completion_time)
-        print("Event done:", self.simulator.network, G.nodes[self.node]['data'])
+        print("Event done:")
+        for n in self.simulator.network.nodes:
+            this = self.simulator.network.nodes[n]['data'].data_set
+            print(len(this), end=' ')
 
         # create the next loop's event
         next_loop = NodeSyncEvent_tvg(
@@ -712,6 +712,7 @@ class SREPSimulator():
             self._eventq_buffer += new_events
             self.timer = event.completion_time
             self.__adjust_eventq()
+            print("Generation:", self._min_generation)
 
             self._stats.end_gen = max(self._stats.end_gen, event.generation)
             self.__trace(event)

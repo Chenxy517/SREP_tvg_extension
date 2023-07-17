@@ -385,7 +385,7 @@ def analytical_large_net(
         pickle.dump(records, f)
 
 def sim_experiments(
-        net_sizes: List[int] = [3],
+        net_sizes: List[int] = [10],
         avg_degs: List[int] = [1],
         reps: int = 1,
         S: scipy.stats.rv_continuous = scipy.stats.maxwell(**{'loc': 15401.20304028427,
@@ -409,7 +409,7 @@ def sim_experiments(
                 # M = mut_diff_from_asgn(sim.network, sim._s_vec)
 
                 record = {'stats': stats,
-                          'diam': nx.diameter(sim.network),
+                        # 'diam': nx.diameter(sim.network),
                         #   'M_sum': M.sum(),
                         #   'M_max': M.max(),
                           'network_size': ns,
