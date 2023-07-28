@@ -16,9 +16,12 @@ def generate_tvg(ws_nkp: Tuple[float, float, float]) -> Tuple[nx.Graph, np.ndarr
     graph.add_edge(0, 1)
     # average degree of the network
     deg = ws_nkp[1]
-    stamp_arr = []
-    for i in range (net_size - 1):
-        stamp_arr.append(np.random.exponential(scale=10, size=100))
+    stamp_arr = [
+        np.array([1, 2, 3]),
+        np.array([3.5, 4.5])
+    ]
+    # for i in range (net_size - 1):
+    #     stamp_arr.append(np.random.exponential(scale=10, size=100))
     return graph, stamp_arr
 
 
@@ -54,10 +57,10 @@ def update_graph(graph, time_stamp, current_time) -> nx.Graph:
                 graph.nodes[i]['data'].replicas[i + 1] = {i}
             if i not in graph.nodes[i + 1]['data'].replicas:
                 graph.nodes[i + 1]['data'].replicas[i] = {i + 1}
-            print("Edge added: ", i, i + 1, "time:", current_time)
+            print("Edge added: ", i, i + 1, "time: ", current_time)
         else:
             if graph.has_edge(i, i + 1):
                 graph.remove_edge(i, i + 1)
-                print("Edge removed: ", current_time)
+                print("Edge removed: ", i, i + 1, "time: ", current_time)
     return graph
     

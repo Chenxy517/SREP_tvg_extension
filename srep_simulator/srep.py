@@ -277,6 +277,11 @@ class NodeSyncEvent_tvg(Event):
 
     def apply(self) -> List[Event]:
         """Simulate one node synchronization loop."""
+        print("==============NEW EVENT=================")
+
+        # update the network according to time_stamp
+        self.simulator.network = tvg.update_graph(self.simulator.network, self.time_stamp, self.current_time)
+
         G = self.simulator.network  # type: nx.Graph
         print("Self node:", self.node)
         print("Neighbors:", list(G.neighbors(self.node)))
@@ -347,8 +352,6 @@ class NodeSyncEvent_tvg(Event):
             G.nodes[self.node]['data'].replicas[i] = \
                 G.nodes[self.node]['data'].data_set.copy()
             
-        # update the network according to time_stamp
-        self.simulator.network = tvg.update_graph(G, self.time_stamp, self.completion_time)
         print("Event done:")
         for n in self.simulator.network.nodes:
             this = self.simulator.network.nodes[n]['data'].data_set
@@ -357,7 +360,7 @@ class NodeSyncEvent_tvg(Event):
         # create the next loop's event
         next_loop = NodeSyncEvent_tvg(
             node=self.node,
-            current_time=self.completion_time,
+            current_time=self.completion_time + 1,
             generation=self.generation + 1,
             simulator=self.simulator,
             time_stamp=self.time_stamp)
