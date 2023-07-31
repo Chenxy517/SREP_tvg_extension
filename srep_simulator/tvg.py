@@ -13,15 +13,27 @@ def generate_tvg(ws_nkp: Tuple[float, float, float]) -> Tuple[nx.Graph, np.ndarr
     net_size = ws_nkp[0]
     nodes = range(net_size)
     graph.add_nodes_from(nodes)
-    graph.add_edge(0, 1)
+    # graph.add_edge(0, 1)
     # average degree of the network
     deg = ws_nkp[1]
-    stamp_arr = [
-        np.array([1, 2, 3]),
-        np.array([3.5, 4.5])
-    ]
-    # for i in range (net_size - 1):
-    #     stamp_arr.append(np.random.exponential(scale=10, size=100))
+    # stamp_arr = [
+    #     np.array([20, 30, 140, 150]),
+    #     np.array([40, 50, 120, 130]),
+    #     np.array([60, 70, 100, 110]),
+    #     np.array([80, 90])
+
+    # ]
+
+    stamp_arr = []
+    array_size = 50
+    mean_interval = 20
+    for i in range (net_size - 1):
+        array = np.cumsum(np.random.exponential(scale=mean_interval, size=array_size))
+        array1 = array + 2
+        combined_array = np.sort(np.concatenate((array, array1)))
+        stamp_arr.append(combined_array)
+        # stamp_arr.append(np.cumsum(np.random.exponential(scale=mean_interval, size=array_size)))
+    
     return graph, stamp_arr
 
 

@@ -385,13 +385,14 @@ def analytical_large_net(
         pickle.dump(records, f)
 
 def sim_experiments(
-        net_sizes: List[int] = [3],
+        net_sizes: List[int] = [4],
         avg_degs: List[int] = [1],
-        reps: int = 1,
+        reps: int = 1000,
         S: scipy.stats.rv_continuous = scipy.stats.maxwell(**{'loc': 15401.20304028427,
                                                               'scale': 15920.396446893377}),
         psi: float = 0.355):
     records: List[Dict[str, Any]] = []
+    timer_list = []
 
     for ns in net_sizes:
         for deg in tqdm(avg_degs):
@@ -417,14 +418,17 @@ def sim_experiments(
                           'rep': rep}
 
                 records.append(record)
+                timer_list.append(record['stats'].end_timer)
 
                 del sim
                 gc.collect()
 
-    sfx = uuid.uuid4().hex[:8]
-    f_n = f"sim_experiments_{sfx}.pickle"
-    with open(f_n, "wb") as f:
-        pickle.dump(records, f)
+    print("Average time:", np.mean(timer_list))
+
+    # sfx = uuid.uuid4().hex[:8]
+    # f_n = f"sim_experiments_{sfx}.pickle"
+    # with open(f_n, "wb") as f:
+    #     pickle.dump(records, f)
 
 
 def overnight():

@@ -697,7 +697,7 @@ class SREPSimulator():
 
     def get_stats(self) -> Stats:
         """Return execution statistics."""
-        self._stats.end_timer = self.timer
+        self._stats.end_timer = max(self.timer, self._stats.end_timer)
         return self._stats
 
     def __run(self) -> None:
@@ -714,7 +714,9 @@ class SREPSimulator():
             new_events: List[Event] = event.apply()
             self._eventq_buffer += new_events
             self.timer = event.completion_time
+            print("timer:", self.timer)
             self.__adjust_eventq()
+            self.get_stats()
             print("Generation:", self._min_generation)
 
             self._stats.end_gen = max(self._stats.end_gen, event.generation)
@@ -725,6 +727,7 @@ class SREPSimulator():
                 logging.info(f"Progress: {progress} events passed.")
 
         self._stats.real_time = time.time() - begin_t
+        print("Stat end timer:", self._stats.end_timer)
 
     def run(self, timeout: int = 10) -> None:
         """
