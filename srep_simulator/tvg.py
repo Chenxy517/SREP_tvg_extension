@@ -29,7 +29,7 @@ def generate_tvg(ws_nkp: Tuple[float, float, float]) -> Tuple[nx.Graph, np.ndarr
     mean_interval = 20
     for i in range (net_size - 1):
         array = np.cumsum(np.random.exponential(scale=mean_interval, size=array_size))
-        array1 = array + 2
+        array1 = array + 1
         combined_array = np.sort(np.concatenate((array, array1)))
         stamp_arr.append(combined_array)
         # stamp_arr.append(np.cumsum(np.random.exponential(scale=mean_interval, size=array_size)))
