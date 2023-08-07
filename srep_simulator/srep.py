@@ -277,21 +277,21 @@ class NodeSyncEvent_tvg(Event):
 
     def apply(self) -> List[Event]:
         """Simulate one node synchronization loop."""
-        print("==============NEW EVENT=================")
+        # print("==============NEW EVENT=================")
 
         # update the network according to time_stamp
         self.simulator.network = tvg.update_graph(self.simulator.network, self.time_stamp, self.current_time)
 
         G = self.simulator.network  # type: nx.Graph
-        print("Self node:", self.node)
-        print("Neighbors:", list(G.neighbors(self.node)))
+        # print("Self node:", self.node)
+        # print("Neighbors:", list(G.neighbors(self.node)))
 
         # sync with all neighbors using replicas
         for n in G.neighbors(self.node):
             this_node = G.nodes[self.node]['data']  # type: NetworkNode
             neighbor = G.nodes[n]['data']           # type: NetworkNode
-            print("self:", this_node)
-            print("neighbor", neighbor)
+            # print("self:", this_node)
+            # print("neighbor", neighbor)
 
             # sync only the neighbors that did not sync with me in
             # this same generation
@@ -331,7 +331,7 @@ class NodeSyncEvent_tvg(Event):
 
             # increment global sync invocation counter
             self.simulator._stats.sync_invocations += 1
-            print("Sync cnt:", self.simulator._stats.sync_invocations)
+            # print("Sync cnt:", self.simulator._stats.sync_invocations)
 
         # count the redundant transfers
         d_set = G.nodes[self.node]['data'].data_set
@@ -352,10 +352,10 @@ class NodeSyncEvent_tvg(Event):
             G.nodes[self.node]['data'].replicas[i] = \
                 G.nodes[self.node]['data'].data_set.copy()
             
-        print("Event done:")
+        # print("Event done:")
         for n in self.simulator.network.nodes:
             this = self.simulator.network.nodes[n]['data'].data_set
-            print(len(this), end=' ')
+            # print(len(this), end=' ')
 
         # create the next loop's event
         next_loop = NodeSyncEvent_tvg(
@@ -519,7 +519,7 @@ class SREPSimulator():
                 self.network = nx.generators.random_graphs.connected_watts_strogatz_graph(*self.ws_nkp)
             else:
                 self.network, self.time_stamp = tvg.generate_tvg(self.ws_nkp)
-                print("Time Stamp:", self.time_stamp)
+                # print("Time Stamp:", self.time_stamp)
         else:
             self.network = self.network.copy()
 
@@ -573,7 +573,7 @@ class SREPSimulator():
                     replicas={nbr: set([n])
                               for nbr in self.network[n]})
                 self.network.nodes[n]['data'] = node_data
-                print(node_data)
+                # print(node_data)
 
         # create the initial events
         if self.tvg_applied is False:
@@ -714,10 +714,10 @@ class SREPSimulator():
             new_events: List[Event] = event.apply()
             self._eventq_buffer += new_events
             self.timer = event.completion_time
-            print("timer:", self.timer)
+            # print("timer:", self.timer)
             self.__adjust_eventq()
             self.get_stats()
-            print("Generation:", self._min_generation)
+            # print("Generation:", self._min_generation)
 
             self._stats.end_gen = max(self._stats.end_gen, event.generation)
             self.__trace(event)
@@ -727,7 +727,7 @@ class SREPSimulator():
                 logging.info(f"Progress: {progress} events passed.")
 
         self._stats.real_time = time.time() - begin_t
-        print("Stat end timer:", self._stats.end_timer)
+        # print("Stat end timer:", self._stats.end_timer)
 
     def run(self, timeout: int = 10) -> None:
         """

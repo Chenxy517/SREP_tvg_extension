@@ -19,6 +19,7 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 
+from scipy.stats import norm
 from typing import List, Tuple, Dict, Set, Any
 from tqdm import tqdm
 
@@ -385,16 +386,16 @@ def analytical_large_net(
         pickle.dump(records, f)
 
 def sim_experiments(
-        net_sizes: List[int] = [7],
+        net_sizes: List[int] = [6, 7, 8, 9, 10],
         avg_degs: List[int] = [1],
-        reps: int = 500,
+        reps: int = 1000,
         S: scipy.stats.rv_continuous = scipy.stats.maxwell(**{'loc': 15401.20304028427,
                                                               'scale': 15920.396446893377}),
         psi: float = 0.355):
-    records: List[Dict[str, Any]] = []
-    timer_list = []
 
     for ns in net_sizes:
+        records: List[Dict[str, Any]] = []
+        timer_list = []
         for deg in tqdm(avg_degs):
             for rep in range(reps):
                 # sim = SREPSimulator(ws_nkp=(ns, deg, 0.24),
@@ -422,8 +423,16 @@ def sim_experiments(
 
                 del sim
                 gc.collect()
+        mean = np.mean(timer_list)
+        stddev = np.std(timer_list)
 
-    print("Average time:", np.mean(timer_list))
+        z = norm.ppf(0.975)
+        interval = [mean - z * (stddev / np.sqrt(reps)), mean + z * (stddev / np.sqrt(reps))]
+        print("Average time:", mean)
+        print("Confidence Interval:", interval)
+        with open("confidence_interval.txt", "a") as file:
+            file.write("{} {} {}\n".format(ns, mean, interval))
+
 
     # sfx = uuid.uuid4().hex[:8]
     # f_n = f"sim_experiments_{sfx}.pickle"

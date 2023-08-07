@@ -1,7 +1,7 @@
 import numpy as np
 
 # Parameters for the Gamma distribution
-k = 7
+k = 24
 theta = 20
 
 # Number of samples to generate
