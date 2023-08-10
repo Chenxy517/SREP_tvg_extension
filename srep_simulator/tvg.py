@@ -41,8 +41,14 @@ def generate_tvg(ws_nkp: Tuple[float, float, float]) -> Tuple[nx.Graph, np.ndarr
 
     stamp_arr = []
     for i in range (net_size - 1):
-        bool_array = np.random.choice([True, False], size=500, p=[prob_con, prob_discon])
-        stamp_arr.append(bool_array)
+        bool_array = np.random.choice([True, False], size=1000, p=[prob_con, prob_discon])
+        array = []
+        for index in range(0, 1000):
+            if bool_array[index]:
+                array.append(index)
+        stamp_arr.append(array)
+
+    stamp_arr_test = [[2,8],[5,10]]
     
     return graph, stamp_arr
 
@@ -71,7 +77,10 @@ def check_connection_exp(array, time):
         return True
 
 def check_connection(array, time):
-    return array[time - 1]
+    if time in array:
+        return True
+    else:
+        return False
 
 
 def update_graph(graph, time_stamp, current_time) -> nx.Graph:

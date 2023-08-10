@@ -273,6 +273,7 @@ class NodeSyncEvent_tvg(Event):
             f"Duration of {self} has been set at construction time."
 
         self.duration = self.simulator.calc_duration(self.node)
+        # print("Duration:", self.duration)
         self.completion_time += self.duration
 
     def apply(self) -> List[Event]:
@@ -285,6 +286,10 @@ class NodeSyncEvent_tvg(Event):
         G = self.simulator.network  # type: nx.Graph
         # print("Self node:", self.node)
         # print("Neighbors:", list(G.neighbors(self.node)))
+
+        self.duration = self.simulator.calc_duration(self.node)
+        # print("Duration:", self.duration)
+        self.completion_time += self.duration
 
         # sync with all neighbors using replicas
         for n in G.neighbors(self.node):
@@ -674,7 +679,7 @@ class SREPSimulator():
         if flush_eventq_buffer:
             for i in range(len(self._eventq_buffer)):
                 e = self._eventq_buffer[i]  # type: NodeSyncEvent
-                e.adjust_duration()
+                # e.adjust_duration()
 
             self.eventq.enqueue(self._eventq_buffer)
             self._eventq_buffer.clear()
