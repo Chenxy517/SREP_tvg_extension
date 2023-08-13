@@ -36,7 +36,7 @@ def generate_tvg(ws_nkp: Tuple[float, float, float]) -> Tuple[nx.Graph, np.ndarr
     #     stamp_arr.append(full_arr)
     #     # stamp_arr.append(np.cumsum(np.random.exponential(scale=mean_interval, size=array_size)))
 
-    prob_con = 0.05
+    prob_con = 0.15
     prob_discon = 1 - prob_con
 
     stamp_arr = []

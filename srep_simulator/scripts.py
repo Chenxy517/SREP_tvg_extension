@@ -386,7 +386,7 @@ def analytical_large_net(
         pickle.dump(records, f)
 
 def sim_experiments(
-        net_sizes: List[int] = [25, 30, 35, 40],
+        net_sizes: List[int] = list(range(2, 21)),
         avg_degs: List[int] = [1],
         reps: int = 1000,
         S: scipy.stats.rv_continuous = scipy.stats.maxwell(**{'loc': 15401.20304028427,
@@ -430,7 +430,7 @@ def sim_experiments(
         interval = [mean - z * (stddev / np.sqrt(reps)), mean + z * (stddev / np.sqrt(reps))]
         print("Average time:", mean)
         print("Confidence Interval:", interval)
-        with open("data.txt", "a") as file:
+        with open("data(p=0.15).txt", "a") as file:
             file.write("{} {} {}\n".format(ns, mean, interval))
 
 

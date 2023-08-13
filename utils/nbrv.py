@@ -1,9 +1,10 @@
 import numpy as np
 
 # Parameters
-gamma_list = [1,2,3,4,5,6,7,8,9,10]
+gamma_list = [12, 15, 17, 20]
 p = 0.05
 size = 10000  # Number of samples to generate
+ana = []
 
 for gamma in gamma_list:
     # Generate negative binomial random variables
@@ -13,4 +14,6 @@ for gamma in gamma_list:
     # Calculate the maximum of the two variables
     max_value = np.maximum(variable1, variable2)
 
-    print("Maximum of the two variables:", 2 * np.mean(max_value))
+    ana.append(2 * np.mean(max_value))
+
+print(ana)
