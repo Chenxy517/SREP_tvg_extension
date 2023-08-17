@@ -9,10 +9,6 @@ def generate_tvg(ws_nkp: Tuple[float, float, float]) -> Tuple[nx.Graph, np.ndarr
     # base_graph = nx.generators.random_graphs.connected_watts_strogatz_graph(*ws_nkp)
 
     # size of the network
-    graph = nx.Graph()
-    net_size = ws_nkp[0]
-    nodes = range(net_size)
-    graph.add_nodes_from(nodes)
     # graph.add_edge(0, 1)
     # average degree of the network
     # deg = ws_nkp[1]
@@ -36,17 +32,37 @@ def generate_tvg(ws_nkp: Tuple[float, float, float]) -> Tuple[nx.Graph, np.ndarr
     #     stamp_arr.append(full_arr)
     #     # stamp_arr.append(np.cumsum(np.random.exponential(scale=mean_interval, size=array_size)))
 
-    prob_con = 0.15
+    diameter = 5
+    net_size = 100
+    nodes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+    edges = [(0, 4), (0, 10), (0, 8), (1, 7), (1, 14), (2, 14), (3, 12), (5, 9), (6, 12),
+            (8, 9), (8, 12), (8, 17), (8, 14), (8, 19), (9, 11), (12, 13), (14, 15),
+            (14, 18), (15, 16)]
+
+    # Create the graph
+    graph = nx.Graph()
+    graph.add_nodes_from(nodes)
+    graph.add_edges_from(edges)
+
+    prob_con = 0.05
     prob_discon = 1 - prob_con
 
     stamp_arr = []
-    for i in range (net_size - 1):
+    # for i in range (net_size - 1):
+    #     bool_array = np.random.choice([True, False], size=1000, p=[prob_con, prob_discon])
+    #     array = []
+    #     for index in range(0, 1000):
+    #         if bool_array[index]:
+    #             array.append(index)
+    #     stamp_arr.append(array)
+    
+    for edge in edges:
         bool_array = np.random.choice([True, False], size=1000, p=[prob_con, prob_discon])
         array = []
         for index in range(0, 1000):
             if bool_array[index]:
                 array.append(index)
-        stamp_arr.append(array)
+        stamp_arr[edge] = array 
 
     stamp_arr_test = [[2,8],[5,10]]
     
@@ -84,18 +100,33 @@ def check_connection(array, time):
 
 
 def update_graph(graph, time_stamp, current_time) -> nx.Graph:
-    n = len(graph.nodes)
-    for i in  range(n - 1):
-        if check_connection(time_stamp[i], current_time):
-            graph.add_edge(i, i + 1)
-            if i + 1 not in graph.nodes[i]['data'].replicas:
-                graph.nodes[i]['data'].replicas[i + 1] = {i}
-            if i not in graph.nodes[i + 1]['data'].replicas:
-                graph.nodes[i + 1]['data'].replicas[i] = {i + 1}
+    for edge, time_arr in  time_stamp.item:
+        node1 = edge[0]
+        node2 = edge[1]
+        if check_connection(time_arr, current_time):
+            graph.add_edge(node1, node2)
+            if node2 not in graph.nodes[node1]['data'].replicas:
+                graph.nodes[node1]['data'].replicas[node2] = {node1}
+            if node1 not in graph.nodes[node2]['data'].replicas:
+                graph.nodes[node2]['data'].replicas[node1] = {node2}
             # print("Edge added: ", i, i + 1, "time: ", current_time)
         else:
-            if graph.has_edge(i, i + 1):
-                graph.remove_edge(i, i + 1)
+            if graph.has_edge(node1, node2):
+                graph.remove_edge(node1, node2)
                 # print("Edge removed: ", i, i + 1, "time: ", current_time)
     return graph
     
+
+def generate_graph_with_diameter(diameter):
+    graph = nx.random_tree(20)  # Generate a random tree with diameter + 1 nodes
+    while nx.diameter(graph) != diameter:
+        graph = nx.random_tree(20)
+    
+    return graph
+
+# desired_diameter = 5  # Replace with the desired diameter
+# graph = generate_graph_with_diameter(desired_diameter)
+
+# print("Graph Nodes:", graph.nodes())
+# print("Graph Edges:", graph.edges())
+# print("Graph Diameter:", nx.diameter(graph))
