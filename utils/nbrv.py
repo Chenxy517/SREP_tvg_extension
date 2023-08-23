@@ -1,7 +1,7 @@
 import numpy as np
 
 # Parameters
-gamma_list = [12, 15, 17, 20]
+gamma_list = [14, 19]
 p = 0.05
 size = 10000  # Number of samples to generate
 ana = []

@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Data
 data_005 = [
@@ -75,8 +76,19 @@ sim_005 = [item[1] for item in data_005]
 sim_01 = [item[1] for item in data_01]
 sim_015 = [item[1] for item in data_015]
 
-ana_005 = [20, 58.0696, 105.8186, 105.8186, 149.9606, 149.9606, 196.1002, 196.1002, 237.0068, 237.0068, 280.0756, 280.0756, 322.51, 322.51, 365.8616, 365.8616, 405.742, 405.742, 448.5546, 530.6136, 652.5386, 737.0668, 857.1302]
+err_lower_01 = [row[1] - row[2][0] for row in data_01]
+err_upper_01 = [row[2][1] - row[1] for row in data_01]
 
+err_lower_015 = [row[1] - row[2][0] for row in data_015]
+err_upper_015 = [row[2][1] - row[1] for row in data_015]
+
+ana_005 = [20, 58.0696, 85.7344, 105.8186, 132.1876, 149.9606, 175.6066, 196.1002, 219.0824, 237.0068, 261.7016, 280.0756, 305.3478, 322.51, 346.166, 365.8616, 386.3986, 405.742, 429.207, 530.6136, 612.732, 737.0668, 813.759]
+
+
+sim_005_intervals = [[19.47044414292179, 21.827555857078213], [48.40768610858602, 51.954313891413975], [77.08682929939394, 81.60917070060606], [93.98898227252454, 98.43901772747546], [118.6355607672284, 123.8524392327716], [139.14810924182657, 144.89189075817345], [154.2499605752137, 160.0820394247863], [172.80773978083906, 179.16426021916092], [190.97887931597484, 197.29112068402515], [206.51682263475638, 213.2511773652436], [225.66765224062112, 232.36634775937887], [242.15271288952655, 249.34728711047345], [255.6967388077749, 263.1552611922251], [272.59270153597635, 279.7932984640236], [287.103255664328, 294.238744335672], [308.2138757767751, 315.84412422322487], [320.3941873172672, 328.2358126827328], [338.00146117794316, 345.7685388220568], [349.1663099357907, 357.0196900642093], [424.2997014512748, 433.2622985487252], [499.13905954879675, 508.4029404512033], [568.7034323091298, 578.3085676908702], [638.0925904369669, 648.4354095630331]]
+y_errors = [(mean - lower, upper - mean) for mean, (lower, upper) in zip(sim_005, sim_005_intervals)]
+lower_errors_005 = [err[0] for err in y_errors]
+upper_errors_005 = [err[1] for err in y_errors]
 
 x1 = list(range(2, 21))
 x1.append(25)
@@ -89,24 +101,24 @@ x2 = list(range(2, 21))
 
 # Figure 1
 plt.figure(figsize=(10, 6))
-plt.plot(x1, sim_005, marker='o', label='Simulation')
-plt.plot(x1, ana_005, marker='o', label='Analysis')
+plt.errorbar(x1, sim_005, yerr=[lower_errors_005, upper_errors_005], fmt='-o', markersize=3, capsize=5, capthick=2, color='blue', ecolor='red', label='Simulation')
+plt.plot(x1, ana_005, marker='o', markersize=3, color='orange',label='Analysis')
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.title('Comparison(p=0.05)')
-plt.legend()
+plt.legend(fontsize=25)
 plt.grid(True)
 plt.show()
 
 # Figure 3
-plt.figure(figsize=(20, 6))
-plt.plot(x2, sim_005[:19], marker='o', label='P=0.05')
-plt.plot(x2, sim_01, marker='o', label='P=0.1')
-plt.plot(x2, sim_015, marker='o', label='P=0.15')
-plt.xticks(x2)
-plt.xlabel('Node')
-plt.ylabel('Time Cost')
-plt.title('Comparison(P=0.05, 0.1, 0.15)')
-plt.legend()
-plt.grid(True)
-plt.show()
+# plt.figure(figsize=(20, 6))
+# plt.errorbar(x2, sim_005[:19], yerr=[lower_errors_005[:19], upper_errors_005[:19]], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='P=0.05')
+# plt.errorbar(x2, sim_01, yerr=[err_lower_01, err_upper_01], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='P=0.1')
+# plt.errorbar(x2, sim_015, yerr=[err_lower_015, err_upper_015], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='P=0.15')
+# plt.xticks(x2)
+# plt.xlabel('Node')
+# plt.ylabel('Time Cost')
+# plt.title('Comparison(P=0.05, 0.1, 0.15)')
+# plt.legend(fontsize=25)
+# plt.grid(True)
+# plt.show()
