@@ -83,7 +83,8 @@ err_lower_015 = [row[1] - row[2][0] for row in data_015]
 err_upper_015 = [row[2][1] - row[1] for row in data_015]
 
 ana_005 = [20, 58.0696, 85.7344, 105.8186, 132.1876, 149.9606, 175.6066, 196.1002, 219.0824, 237.0068, 261.7016, 280.0756, 305.3478, 322.51, 346.166, 365.8616, 386.3986, 405.742, 429.207, 530.6136, 612.732, 737.0668, 813.759]
-
+ana_01 = [10, 27.499, 41.2396, 49.7252, 62.0668, 71.528, 83.8324, 93.1614, 104.254, 113.623, 123.694, 133.5258, 144.9734, 154.287, 164.4344, 173.857, 185.3106, 193.641, 204.3456]
+ana_015 = [8.67, 19.3658, 27.835, 33.6866, 41.4238, 47.5808, 55.2112, 60.7952, 67.785, 74.0276, 80.3514, 86.4256, 93.7568, 99.0962, 105.4492, 112.1368, 118.31, 124.2532, 130.9994]
 
 sim_005_intervals = [[19.47044414292179, 21.827555857078213], [48.40768610858602, 51.954313891413975], [77.08682929939394, 81.60917070060606], [93.98898227252454, 98.43901772747546], [118.6355607672284, 123.8524392327716], [139.14810924182657, 144.89189075817345], [154.2499605752137, 160.0820394247863], [172.80773978083906, 179.16426021916092], [190.97887931597484, 197.29112068402515], [206.51682263475638, 213.2511773652436], [225.66765224062112, 232.36634775937887], [242.15271288952655, 249.34728711047345], [255.6967388077749, 263.1552611922251], [272.59270153597635, 279.7932984640236], [287.103255664328, 294.238744335672], [308.2138757767751, 315.84412422322487], [320.3941873172672, 328.2358126827328], [338.00146117794316, 345.7685388220568], [349.1663099357907, 357.0196900642093], [424.2997014512748, 433.2622985487252], [499.13905954879675, 508.4029404512033], [568.7034323091298, 578.3085676908702], [638.0925904369669, 648.4354095630331]]
 y_errors = [(mean - lower, upper - mean) for mean, (lower, upper) in zip(sim_005, sim_005_intervals)]
@@ -102,23 +103,61 @@ x2 = list(range(2, 21))
 # Figure 1
 plt.figure(figsize=(10, 6))
 plt.errorbar(x1, sim_005, yerr=[lower_errors_005, upper_errors_005], fmt='-o', markersize=3, capsize=5, capthick=2, color='blue', ecolor='red', label='Simulation')
-plt.plot(x1, ana_005, marker='o', markersize=3, color='orange',label='Analysis')
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.title('Comparison(p=0.05)')
+plt.plot(x1, ana_005, linestyle='--', markersize=3, color='orange',label='Bound')
+plt.xticks(fontsize=18)
+plt.yticks(fontsize=18)
+plt.tick_params(bottom=False, top=False, left=False, right=False)
+plt.xlabel('Network Size', fontsize=18)
+plt.ylabel('Time', fontsize=18)
 plt.legend(fontsize=25)
-plt.grid(True)
+# plt.grid(True)
 plt.show()
 
 # Figure 3
-# plt.figure(figsize=(20, 6))
-# plt.errorbar(x2, sim_005[:19], yerr=[lower_errors_005[:19], upper_errors_005[:19]], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='P=0.05')
-# plt.errorbar(x2, sim_01, yerr=[err_lower_01, err_upper_01], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='P=0.1')
-# plt.errorbar(x2, sim_015, yerr=[err_lower_015, err_upper_015], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='P=0.15')
-# plt.xticks(x2)
-# plt.xlabel('Node')
-# plt.ylabel('Time Cost')
-# plt.title('Comparison(P=0.05, 0.1, 0.15)')
-# plt.legend(fontsize=25)
+plt.figure(figsize=(20, 6))
+plt.errorbar(x2, sim_005[:19], yerr=[lower_errors_005[:19], upper_errors_005[:19]], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='$p_{con}$=0.05(Simulation)', color='orange')
+plt.plot(x2, ana_005[:19], linestyle='--', markersize=3,label='$p_{con}$=0.05(Bound)', color='orange')
+plt.errorbar(x2, sim_01, yerr=[err_lower_01, err_upper_01], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='$p_{con}$=0.1(Simulation)', color='green')
+plt.plot(x2, ana_01, linestyle='--', markersize=3, label='$p_{con}$=0.1(Bound)', color='green')
+plt.errorbar(x2, sim_015, yerr=[err_lower_015, err_upper_015], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='$p_{con}$=0.15(Simulation)', color='blue')
+plt.plot(x2, ana_015, linestyle='--', markersize=3, label='$p_{con}$=0.15(Bound)', color='blue')
+plt.xticks(x2,fontsize=18)
+plt.yticks(fontsize=18)
+plt.tick_params(bottom=False, top=False, left=False, right=False)
+plt.xlabel('Network Size', fontsize=18)
+plt.ylabel('Time', fontsize=18)
+plt.legend(fontsize=17)
 # plt.grid(True)
+plt.show()
+
+# # 创建一个 Figure 和两个子图
+# fig, axes = plt.subplots(1, 2, figsize=(15, 6))
+
+# # 第一个子图的内容
+# axes[0].errorbar(x1, sim_005, yerr=[lower_errors_005, upper_errors_005], fmt='-o', markersize=3, capsize=5, capthick=2, color='blue', ecolor='red', label='Simulation')
+# axes[0].plot(x1, ana_005, marker='o', markersize=3, color='orange',label='Bound')
+# axes[0].set_xlabel('Network Size', fontsize=18)
+# axes[0].set_ylabel('Time Cost', fontsize=18)
+# axes[0].legend(fontsize=23)
+# axes[0].tick_params(bottom=False, top=False, left=False, right=False)
+# axes[0].set_title('(a)', fontsize=16, y=-0.2) 
+
+# # 第二个子图的内容
+# axes[1].errorbar(x2, sim_005[:19], yerr=[lower_errors_005[:19], upper_errors_005[:19]], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='P=0.05(Simulation)')
+# axes[1].plot(x2, ana_005[:19], marker='o', markersize=3,label='P=0.05(Bound)')
+# axes[1].errorbar(x2, sim_01, yerr=[err_lower_01, err_upper_01], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='P=0.1(Simulation)')
+# axes[1].plot(x2, ana_01, marker='o', markersize=3, label='P=0.1(Bound)')
+# axes[1].errorbar(x2, sim_015, yerr=[err_lower_015, err_upper_015], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='P=0.15(Simulation)')
+# axes[1].plot(x2, ana_015, marker='o', markersize=3, label='P=0.15(Bound)')
+# axes[1].set_xticks(x2)
+# axes[1].set_xlabel('Network Size', fontsize=18)
+# axes[1].set_ylabel('Time Cost', fontsize=18)
+# axes[1].legend(fontsize=15)
+# axes[1].tick_params(bottom=False, top=False, left=False, right=False) 
+# axes[1].set_title('(b)', fontsize=16, y=-0.2) 
+
+# # 调整子图之间的间距
+# plt.tight_layout()
+
+# # 显示图形
 # plt.show()
