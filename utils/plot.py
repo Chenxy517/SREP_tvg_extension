@@ -100,35 +100,35 @@ x2 = list(range(2, 21))
 
 
 
-# Figure 1
-plt.figure(figsize=(10, 6))
-plt.errorbar(x1, sim_005, yerr=[lower_errors_005, upper_errors_005], fmt='-o', markersize=3, capsize=5, capthick=2, color='blue', ecolor='red', label='Simulation')
-plt.plot(x1, ana_005, linestyle='--', markersize=3, color='orange',label='Bound')
-plt.xticks(fontsize=18)
-plt.yticks(fontsize=18)
-plt.tick_params(bottom=False, top=False, left=False, right=False)
-plt.xlabel('Network Size', fontsize=18)
-plt.ylabel('Time', fontsize=18)
-plt.legend(fontsize=25)
-# plt.grid(True)
-plt.show()
+# # Figure 1
+# plt.figure(figsize=(10, 6))
+# plt.errorbar(x1, sim_005, yerr=[lower_errors_005, upper_errors_005], fmt='-o', markersize=3, capsize=5, capthick=2, color='blue', ecolor='red', label='Simulation')
+# plt.plot(x1, ana_005, linestyle='--', markersize=3, color='orange',label='Bound')
+# plt.xticks(fontsize=18)
+# plt.yticks(fontsize=18)
+# plt.tick_params(bottom=False, top=False, left=False, right=False)
+# plt.xlabel('Network Size', fontsize=18)
+# plt.ylabel('Time', fontsize=18)
+# plt.legend(fontsize=25)
+# # plt.grid(True)
+# plt.show()
 
-# Figure 3
-plt.figure(figsize=(20, 6))
-plt.errorbar(x2, sim_005[:19], yerr=[lower_errors_005[:19], upper_errors_005[:19]], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='$p_{con}$=0.05(Simulation)', color='orange')
-plt.plot(x2, ana_005[:19], linestyle='--', markersize=3,label='$p_{con}$=0.05(Bound)', color='orange')
-plt.errorbar(x2, sim_01, yerr=[err_lower_01, err_upper_01], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='$p_{con}$=0.1(Simulation)', color='green')
-plt.plot(x2, ana_01, linestyle='--', markersize=3, label='$p_{con}$=0.1(Bound)', color='green')
-plt.errorbar(x2, sim_015, yerr=[err_lower_015, err_upper_015], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='$p_{con}$=0.15(Simulation)', color='blue')
-plt.plot(x2, ana_015, linestyle='--', markersize=3, label='$p_{con}$=0.15(Bound)', color='blue')
-plt.xticks(x2,fontsize=18)
-plt.yticks(fontsize=18)
-plt.tick_params(bottom=False, top=False, left=False, right=False)
-plt.xlabel('Network Size', fontsize=18)
-plt.ylabel('Time', fontsize=18)
-plt.legend(fontsize=17)
-# plt.grid(True)
-plt.show()
+# # Figure 3
+# plt.figure(figsize=(20, 6))
+# plt.errorbar(x2, sim_005[:19], yerr=[lower_errors_005[:19], upper_errors_005[:19]], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='$p_{con}$=0.05(Simulation)', color='orange')
+# plt.plot(x2, ana_005[:19], linestyle='--', markersize=3,label='$p_{con}$=0.05(Bound)', color='orange')
+# plt.errorbar(x2, sim_01, yerr=[err_lower_01, err_upper_01], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='$p_{con}$=0.1(Simulation)', color='green')
+# plt.plot(x2, ana_01, linestyle='--', markersize=3, label='$p_{con}$=0.1(Bound)', color='green')
+# plt.errorbar(x2, sim_015, yerr=[err_lower_015, err_upper_015], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='$p_{con}$=0.15(Simulation)', color='blue')
+# plt.plot(x2, ana_015, linestyle='--', markersize=3, label='$p_{con}$=0.15(Bound)', color='blue')
+# plt.xticks(x2,fontsize=18)
+# plt.yticks(fontsize=18)
+# plt.tick_params(bottom=False, top=False, left=False, right=False)
+# plt.xlabel('Network Size', fontsize=18)
+# plt.ylabel('Time', fontsize=18)
+# plt.legend(fontsize=17)
+# # plt.grid(True)
+# plt.show()
 
 # # 创建一个 Figure 和两个子图
 # fig, axes = plt.subplots(1, 2, figsize=(15, 6))
@@ -161,3 +161,45 @@ plt.show()
 
 # # 显示图形
 # plt.show()
+
+data_graph = [
+    [2, 134, 4, 22.332, [21.136509084970868, 23.527490915029134]],
+    [3, 197, 6, 50.526, [48.79106392227285, 52.26093607772716]],
+    [4, 221, 14, 75.567, [73.36169514565005, 77.77230485434994]],
+    [5, 269, 24, 92.75, [90.59948137568998, 94.90051862431002]],
+    [6, 310, 31, 110.563, [108.03300910519036, 113.09299089480965]],
+    [7, 327, 44, 122.886, [120.25539025046427, 125.51660974953572]],
+    [8, 379, 52, 137.575, [134.869097846395, 140.28090215360498]],
+    [9, 346, 61, 147.233, [144.55295531613206, 149.91304468386795]],
+    [10, 384, 53, 158.892, [156.0512877170478, 161.73271228295218]],
+    [11, 385, 77, 173.543, [170.68229297274112, 176.4037070272589]],
+    [12, 447, 73, 183.128, [180.01470618202086, 186.2412938179791]],
+    [13, 387, 91, 191.841, [188.93302387402747, 194.74897612597255]],
+    [14, 440, 91, 202.235, [199.28458048560992, 205.1854195143901]],
+    [15, 457, 99, 208.329, [205.25394532705806, 211.40405467294195]],
+    [16, 468, 110, 220.877, [217.69124275930642, 224.0627572406936]],
+    [17, 519, 109, 228.449, [225.09887661294314, 231.79912338705688]],
+    [18, 657, 118, 235.792, [232.4483458256286, 239.1356541743714]],
+    [19, 557, 125, 242.644, [239.44378915735075, 245.84421084264926]],
+    [20, 515, 130, 252.75, [249.55352436734935, 255.94647563265065]]
+]
+
+sim_graph = [item[3] for item in data_graph]
+
+err_lower_graph = [row[3] - row[4][0] for row in data_graph]
+err_upper_graph = [row[4][1] - row[3] for row in data_graph]
+
+ana_graph = [150.26968, 237.34934, 323.58298, 407.76978, 489.96714, 572.85688, 654.37382, 736.53224, 818.478, 898.2258, 979.6407, 1059.06004, 1139.70134, 1219.18074, 1301.51014, 1380.41296, 1458.63818, 1538.95568, 1618.19488]
+
+# Figure 1
+plt.figure(figsize=(10, 6))
+plt.errorbar(x2, sim_graph, yerr=[err_lower_graph, err_upper_graph], fmt='-o', markersize=3, capsize=5, capthick=2, color='green', ecolor='red', label='Simulation(graph)')
+plt.errorbar(x2, sim_005[:19], yerr=[lower_errors_005[:19], upper_errors_005[:19]], fmt='-o', markersize=3, capsize=5, capthick=2, ecolor='red', label='Simulation(line)', color='orange')
+plt.plot(x2, ana_005[:19], linestyle='--', markersize=3, label='Bound', color='blue')
+plt.xticks(x2, fontsize=18)
+plt.yticks(fontsize=18)
+plt.xlabel('Network Size',fontsize=18)
+plt.ylabel('Time',fontsize=18)
+plt.legend(fontsize=25)
+# plt.grid(True)
+plt.show()
